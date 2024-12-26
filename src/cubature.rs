@@ -114,7 +114,7 @@ mod tests {
     fn test_hcubature() {
         let xmin = [0.0, 0.0];
         let xmax = [1.5, 1.5];
-        let termination_info = TerminationInfo::new().build().unwrap();
+        let termination_info = TerminationInfo::new_builder().build().unwrap();
         let mut val: [f64; 3] = Default::default();
         let mut err: [f64; 3] = Default::default();
 
@@ -146,7 +146,7 @@ mod tests {
     fn test_pcubature() {
         let xmin = [0.0, 0.0];
         let xmax = [1.0, 1.0];
-        let termination_info = TerminationInfo::new().build().unwrap();
+        let termination_info = TerminationInfo::new_builder().build().unwrap();
         let mut val: [f64; 2] = Default::default();
         let mut err: [f64; 2] = Default::default();
 

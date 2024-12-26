@@ -10,16 +10,26 @@ pub struct TerminationInfo {
 }
 
 impl TerminationInfo {
-    pub fn new() -> TerminationInfoBuilder {
+    pub fn new_builder() -> TerminationInfoBuilder {
         TerminationInfoBuilder::default()
     }
 }
-#[derive(Default)]
 pub struct TerminationInfoBuilder {
-    max_eval: Option<usize>,
-    req_abs_error: Option<f64>,
-    req_rel_error: Option<f64>,
-    norm: Option<cubature_sys::ffi::ErrorNorm>,
+    max_eval: usize,
+    req_abs_error: f64,
+    req_rel_error: f64,
+    norm: ErrorNorm,
+}
+
+impl Default for TerminationInfoBuilder {
+    fn default() -> Self {
+        Self {
+            max_eval: 100_000,
+            req_abs_error: 1.0e-6,
+            req_rel_error: 1.0e-6,
+            norm: ErrorNorm::Individual,
+        }
+    }
 }
 
 impl TerminationInfoBuilder {
@@ -28,40 +38,31 @@ impl TerminationInfoBuilder {
     }
 
     pub fn max_eval(mut self, max_eval: usize) -> Self {
-        self.max_eval = Some(max_eval);
+        self.max_eval = max_eval;
         self
     }
 
     pub fn req_abs_error(mut self, req_abs_error: f64) -> Self {
-        self.req_abs_error = Some(req_abs_error);
+        self.req_abs_error = req_abs_error;
         self
     }
 
     pub fn req_rel_error(mut self, req_rel_error: f64) -> Self {
-        self.req_rel_error = Some(req_rel_error);
+        self.req_rel_error = req_rel_error;
         self
     }
 
     pub fn norm(mut self, norm: cubature_sys::ffi::ErrorNorm) -> Self {
-        self.norm = Some(norm);
+        self.norm = norm;
         self
     }
 
     pub fn build(self) -> std::result::Result<TerminationInfo, CubatureError> {
-        const DEFAULT_MAX_EVAL: usize = 100000;
-        const DEFAULT_REQ_ABS_ERROR: f64 = 1.0e-8;
-        const DEFAULT_REQ_REL_ERROR: f64 = 1.0e-8;
-
-        let max_eval = self.max_eval.unwrap_or(DEFAULT_MAX_EVAL);
-        let req_abs_error = self.req_abs_error.unwrap_or(DEFAULT_REQ_ABS_ERROR);
-        let req_rel_error = self.req_rel_error.unwrap_or(DEFAULT_REQ_REL_ERROR);
-        let norm = self.norm.unwrap_or(ErrorNorm::Individual);
-
         Ok(TerminationInfo {
-            max_eval,
-            req_abs_error,
-            req_rel_error,
-            norm,
+            max_eval: self.max_eval,
+            req_abs_error: self.req_abs_error,
+            req_rel_error: self.req_rel_error,
+            norm: self.norm,
         })
     }
 }
