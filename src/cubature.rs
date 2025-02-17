@@ -13,12 +13,12 @@ pub enum Algorithm {
     PAdaptive,
 }
 
-struct Cubature<Integrand: Fn(&[f64], &mut [f64]) -> bool> {
+struct Cubature<Integrand: FnMut(&[f64], &mut [f64]) -> bool> {
     integrand: Integrand,
     num_evals: usize,
 }
 
-impl<Integrand: Fn(&[f64], &mut [f64]) -> bool> Cubature<Integrand> {
+impl<Integrand: FnMut(&[f64], &mut [f64]) -> bool> Cubature<Integrand> {
     fn call_native(
         &mut self,
         algorithm: Algorithm,
@@ -55,7 +55,7 @@ impl<Integrand: Fn(&[f64], &mut [f64]) -> bool> Cubature<Integrand> {
     }
 }
 
-unsafe extern "C" fn integrand_wrapper<Integrand: Fn(&[f64], &mut [f64]) -> bool>(
+unsafe extern "C" fn integrand_wrapper<Integrand: FnMut(&[f64], &mut [f64]) -> bool>(
     dimension: ::std::os::raw::c_uint,
     x_ptr: *const f64,
     data: *mut ::std::os::raw::c_void,
@@ -81,7 +81,7 @@ unsafe extern "C" fn integrand_wrapper<Integrand: Fn(&[f64], &mut [f64]) -> bool
     }
 }
 
-pub fn cubature<Integrand: Fn(&[f64], &mut [f64]) -> bool>(
+pub fn cubature<Integrand: FnMut(&[f64], &mut [f64]) -> bool>(
     algorithm: Algorithm,
     integrand: Integrand,
     xmin: &[f64],
